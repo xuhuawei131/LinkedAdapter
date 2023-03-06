@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements LifeCircleContext
     MyLinkedList<LinkedBean> linkedList;
     private LinkedAdapter adapter;
     private List<LinkedBean> arrayList;
-    private boolean isLinkedMode = true;
+    private boolean isLinkedMode = false;
 
     private long totalTime = 0;
     private int invokeNum = 0;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements LifeCircleContext
 
         linkedList = new MyLinkedList<LinkedBean>();
         arrayList = new ArrayList<>();
+
 
         listView = findViewById(R.id.listView);
 
@@ -65,21 +66,21 @@ public class MainActivity extends AppCompatActivity implements LifeCircleContext
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long lastTime = System.currentTimeMillis();
-                if (isLinkedMode) {
-                    linkedList.remove(position);
-                } else {
-                    arrayList.remove(position);
+                for (int i = 0; i < 100; i++) {
+                    long lastTime = System.currentTimeMillis();
+                    if (isLinkedMode) {
+                        linkedList.remove(position);
+                    } else {
+                        arrayList.remove(position);
+                    }
+                    long currentTime = System.currentTimeMillis();
+                    long itemTime = currentTime - lastTime;
+                    totalTime += itemTime;
+                    invokeNum++;
                 }
-                long currentTime = System.currentTimeMillis();
-                long itemTime = currentTime - lastTime;
-                totalTime += itemTime;
-                invokeNum++;
-                if (invokeNum % 10 == 0) {
                     Log.e("xhw",
-                            "delete=" + position + ",takeTime=" + (itemTime) + ",avenageTime=" + (totalTime * 1.0f / invokeNum) + "," +
+                            "delete=" + position + ",avenageTime=" + (totalTime * 1.0f / invokeNum) + "," +
                                     "invokeNum=" + invokeNum);
-                }
                 adapter.notifyDataSetChanged();
             }
         });
