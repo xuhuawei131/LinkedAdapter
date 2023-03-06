@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class LinkedAdapter extends MyListBaseAdapter<LinkedViewHolder, LinkedBean> {
     private ListView listView;
-    private MyLinkedList.Node<LinkedBean> headBeanNode;
+    private MyLinkedList.Node<LinkedBean> lastNode;
     private MyLinkedList<LinkedBean> realList;
-    private int lastFirstPositon = 0;
+    private int lastPositon = 0;
     private boolean isOptim = true;
 
     public LinkedAdapter(LifeCircleContext context, List<LinkedBean> arrayList) {
@@ -50,7 +50,7 @@ public class LinkedAdapter extends MyListBaseAdapter<LinkedViewHolder, LinkedBea
             if (realList != null) {
                 // 如果有notify刷新的话 那么重新去构建数据
                 if (isChange) {
-                    lastFirstPositon = -1;
+                    lastPositon = -1;
                 }
                 if (listView != null) {
                     // 获取当前最上面的那个view 是位置号，
@@ -61,30 +61,30 @@ public class LinkedAdapter extends MyListBaseAdapter<LinkedViewHolder, LinkedBea
                         currentFirstPositon = position;
                     }
                     // 如果是刷新notifydata 或者首次进入 那么需要重头开始查询位置
-                    if (lastFirstPositon == currentFirstPositon || lastFirstPositon == -1) {
+                    if (lastPositon == currentFirstPositon || lastPositon == -1) {
                         isChange = false;
-                        lastFirstPositon = currentFirstPositon;
-                        if (isChange || headBeanNode == null) {
-                            headBeanNode = realList.getNode(position);
-                            return headBeanNode.item;
+                        lastPositon = currentFirstPositon;
+                        if (isChange || lastNode == null) {
+                            lastNode = realList.getNode(position);
+                            return lastNode.item;
                         } else {
                             // 如果没有滑动 那么通过headBeanNode这个基准 就不变
                             // lastFirstPositon和headBeanNode是一堆映射 ；通过diff去链表上查询
-                            int diff = position - lastFirstPositon;
-                            MyLinkedList.Node<LinkedBean> item = realList.getNode(headBeanNode, diff);
+                            int diff = position - lastPositon;
+                            MyLinkedList.Node<LinkedBean> item = realList.getNode(lastNode, diff);
                             if (item != null) {
                                 return item.item;
                             }
                         }
                     } else {
                         // 如果如果滑动了 那么需要更新基准的lastFirstPositon和headBeanNode基准
-                        int diff1 = currentFirstPositon - lastFirstPositon;
-                        MyLinkedList.Node<LinkedBean> diffItem = realList.getNode(headBeanNode, diff1);
-                        headBeanNode = diffItem;
-                        lastFirstPositon = currentFirstPositon;
+                        int diff1 = currentFirstPositon - lastPositon;
+                        MyLinkedList.Node<LinkedBean> diffItem = realList.getNode(lastNode, diff1);
+                        lastNode = diffItem;
+                        lastPositon = currentFirstPositon;
                         // 基准更新完了 重复上面的相同的方法 通过diff去查找
-                        int diff2 = position - lastFirstPositon;
-                        MyLinkedList.Node<LinkedBean> item = realList.getNode(headBeanNode, diff2);
+                        int diff2 = position - lastPositon;
+                        MyLinkedList.Node<LinkedBean> item = realList.getNode(lastNode, diff2);
                         if (item != null) {
                             return item.item;
                         }
